@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8">
+
+		<title>Requisições assíncronas</title>
+		
+		<!-- bootstrap - link cdn -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        
+        
+        <script>
+            //Para que requisições possam ser efetuadas sem a atualização da página nesse teste foi criado um objeto ajax, que realiza uma
+            // requisição de uma url atráves do GET e envia o resultado para a página quando a função é executada
+            function RequisitaPagina(url) {
+            
+                document.getElementById('conteudo').innerHTML = ''
+
+            //incluir o gif de loading na página utilizando uma condicional para verificar se existe um gif sendo carregado, caso haja
+            //nada será feito
+            if(!document.getElementById('loading')) {   
+                let imgLoading = document.createElement('img')
+                imgLoading.id = 'loading'
+                imgLoading.src = 'Loading.gif'
+                imgLoading.className = 'rounded mx-auto d-block'
+
+                //inserindo de forma programatica o gif de loading na div de conteudo
+                document.getElementById('conteudo').appendChild(imgLoading)
+            }
+
+            let ajax = new XMLHttpRequest();
+            //Estados de uma requisição AJAX
+            //request not initialized state = 0 
+            //console.log(Ajax.readyState)
+
+
+            ajax.open('GET',url )
+
+            //conection stabilish state = 1
+            //console.log(Ajax.readyState)
+            
+            //Para que possamos visualizar informações como se a requisição foi finalizada com sucesso precisamos de umm metodo do próprio 
+            //Ajax para notificar que a requisição foi finalizada
+            ajax.onreadystatechange = () => {
+               if(ajax.readyState == 4 && ajax.status == 200){
+                   //quando a requisição retornar que foi finalizada o gif de loading irá sumir
+                   console.log('O status da requisicao é', ajax.status)
+                   document.getElementById('conteudo').innerHTML = ajax.responseText
+                  // document.getElementById('loading').remove()
+               }
+
+               if(ajax.readyState == 4 && ajax.status == 404){
+                   //quando a requisição retornar que foi finalizada o gif de loading irá sumir
+                   console.log('O status da requisicao é', ajax.status)
+                   document.getElementById('conteudo').innerHTML = 'Requisição finalizada, porém o recurso solicitado não foi encontrado '
+                   //como agora a aplicação é capaz de inserir uma codificação html como resposta não é mais necessário o uso do remove
+                   //document.getElementById('loading').remove()
+               }
+            }
+
+            ajax.send()
+            //console.log(Ajax)
+         }
+
+        </script>
+	</head>
+
+	<body>
+
+		<!-- Static navbar -->
+	    <nav class="navbar navbar-light bg-light mb-4">
+	      <div class="container">
+	        <div class="navbar-brand mb-0 h1">
+	        	<h3>Requisições síncronas e assíncronas</h3>
+	        </div>
+	      </div>
+	    </nav>
+
+
+	    <div class="container">
+
+	    	<div class="row mb-2">
+	    		<div class="col-md-4 center"></div>
+	    		<div class="col-md-4 center">
+                    <!--Execução da função que solicita a url-->
+	    			<a href="#" class="btn btn-primary" onclick="RequisitaPagina('pagina_1_conteudo.php')">Página 1</a>
+	    			<a href="#" class="btn btn-primary" onclick="RequisitaPagina('pagina_5_conteudo.html')">Página 2</a>
+	    			<a href="#" class="btn btn-primary" onclick="RequisitaPagina('pagina_3_conteudo.html')">Página 3</a>
+	    		</div>
+	    		<div class="col-md-4 center"></div>
+	    	</div>
+	    	
+	    	<div class="row">
+		    	<div class="col-md-1"></div>
+
+		    	<div class="col-md-10" id="conteudo">
+		    		
+		    	</div>
+		    		
+				<div class="col-md-1"></div>
+			</div>
+
+		</div>	
+	</body>
+</html>

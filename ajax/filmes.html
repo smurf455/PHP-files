@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes online</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <script src="xmltojson.js"></script>
+    <script>
+        //criação de função para recuperar o arquivo filme xml
+        function getFilmes(){
+            //instanciando um objeto e realizando uma requisição
+            let xmlHttp = new XMLHttpRequest();
+            //acessando arquivo xml
+            xmlHttp.open('GET','http://localhost/ajax/filmes.xml')
+            //utilizando o metodo de listening para checar os status da requisição
+            xmlHttp.onreadystatechange = () => {
+                if(xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                    //caso a requisição tenha ocorrido com sucesso a resposta dessa requisição é atribuida a uma variavel
+                    let XMLFilmes = xmlHttp.responseText
+                    //Texto STRING
+                   // console.log(XMLFilmes)
+                    //utilização de um metodo js para conversão 
+                    let parser = new DOMParser()
+                    //conversão de arquivos em uma arvore dom
+                    domFilmes = parser.parseFromString(XMLFilmes,'text/xml')
+                    //Arvore DOM
+                    //console.log(domFilmes)
+                    //após a conversão o arquivo dom é retornado como um objeto json
+                    jsonFilmes = xmlToJson(domFilmes)   
+                    //Objeto JSON ao qual o javascript suporta
+                   // console.log(jsonFilmes)
+
+                    for(let i in jsonFilmes['filmes']['filme']){
+                        let item = jsonFilmes['filmes']['filme'][i]
+                        //criando elementos que antes eram feitos de forma estática de forma programatica
+                        let divRow = document.createElement('div')
+                        divRow.className = 'row'
+
+                        let divCol = document.createElement('col')
+                        divCol.className = 'col'
+
+                        let p1 = document.createElement('p')
+                        p1.innerHTML = '<strong>Titulo:</strong> ' + item['titulo'] ['#text']
+
+                        let p2 = document.createElement('p')
+                        p2.innerHTML = '<strong>Resumo:</strong> ' + item['resumo'] ['#text']
+                        //metodo para recuperar indices que são arrays
+                        let genero = ''
+                        for(let g in item.genero){
+                            if(genero) genero += ', ' 
+                            
+                            genero += (item.genero[g]['#text']) 
+                        } 
+
+                        let p3 = document.createElement('p')
+                        p3.innerHTML = '<strong>Gênero:</strong> ' + genero
+
+                        let elenco = ''
+                        for(let e in item.elenco.ator){
+                            if(elenco) elenco += ', ' 
+                            elenco += item.elenco.ator[e]['#text']
+                        }
+                        let p4 = document.createElement('p')
+                        p4.innerHTML = '<strong>Elenco:</strong>' + elenco 
+
+                        let p5 = document.createElement('p')    
+                        p5.innerHTML = '<strong>Data lançamento:</strong> ' + item.dataLancamento['#text'] + ' (' + item.dataLancamento['@attributes']['pais'] + ')'
+
+                        let hr = document.createElement('hr')
+
+                        //organizando a ordem dos elementos de forma programatica
+                        divRow.appendChild(divCol)
+                        divCol.appendChild(p1)
+                        divCol.appendChild(p2)
+                        divCol.appendChild(p3)
+                        divCol.appendChild(p4)
+                        divCol.appendChild(p5)
+                        divCol.appendChild(hr)
+                        //inserindo o conteudo na div lista
+                        document.getElementById('conteudo').appendChild(divRow)
+
+                /*
+                    //elementos criados de forma estática 
+                    <div class="row">
+                        <div class="col ">
+                            <p><strong>Titulo:</strong> Título do filme</p>
+                            <p><strong>Resumo:</strong> Resumo do filme</p>
+                            <p><strong>Gênero:</strong> Gênero do filme</p>
+                            <p><strong>Elenco:</strong> Elenco do filme</p>
+                            <p><strong>Data lançamento:</strong> Data de lançamento do filme</p>
+                            <hr>
+                        </div>
+                    </div>
+                */
+                    }
+                        
+                    
+                }
+
+                if(xmlHttp.readyState == 4 && xmlHttp.status == 404){
+                    //..
+                }
+            }
+            //envio da requisição
+            xmlHttp.send()
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light mb-4">
+        <div class="container">
+            <div class="navbar-brand mb-0 h1">
+                <h3>Catalogo de Filmes</h3>
+            </div>
+        </div>
+    </nav>
+
+        <div class="container" id="conteudo">
+            <div class="row mb-5">
+                <div class="col">
+                    <button type="button " class="btn btn-success" onclick="getFilmes()">Listar filmes</button>
+                </div>
+            </div>
+        </div>
+</body>
+</html>

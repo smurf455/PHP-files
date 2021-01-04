@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes online</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <script src="xmltojson.js"></script>
+    <script>
+        //criação de função para recuperar o arquivo filme xml
+        function getFilmes(){
+            //instanciando um objeto e realizando uma requisição
+            let xmlHttp = new XMLHttpRequest();
+            //acessando arquivo xml
+            xmlHttp.open('GET','http://localhost/ajax/filmes.json')
+            //utilizando o metodo de listening para checar os status da requisição
+            xmlHttp.onreadystatechange = () => {
+                if(xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                    //caso a requisição tenha ocorrido com sucesso a resposta dessa requisição é atribuida a uma variavel
+                    let JSONFilmes = xmlHttp.responseText
+
+                    let objJSONFilmes = JSON.parse(JSONFilmes)
+                    console.log(objJSONFilmes)
+                    
+
+                    for(let i in objJSONFilmes.filmes){
+                        let item = objJSONFilmes.filmes[i]
+                        //criando elementos que antes eram feitos de forma estática de forma programatica
+                        let divRow = document.createElement('div')
+                        divRow.className = 'row'
+
+                        let divCol = document.createElement('col')
+                        divCol.className = 'col'
+
+                        let p1 = document.createElement('p')
+                        p1.innerHTML = '<strong>Titulo:</strong> ' + item.titulo
+
+                        let p2 = document.createElement('p')
+                        p2.innerHTML = '<strong>Resumo:</strong> ' + item.resumo
+                        //metodo para recuperar indices que são arrays
+                        let genero = ''
+                        for(let g in item.generos){
+                            if(genero) genero += ', ' 
+                            
+                            genero += item.generos[g].genero
+                        } 
+
+                        let p3 = document.createElement('p')
+                        p3.innerHTML = '<strong>Gênero:</strong> ' + genero
+
+                        let elenco = ''
+                        for(let e in item.elenco){
+                            if(elenco) elenco += ', ' 
+                            elenco += item.elenco[e].ator
+                        }
+                        let p4 = document.createElement('p')
+                        p4.innerHTML = '<strong>Elenco:</strong>' + elenco 
+
+                        let p5 = document.createElement('p')    
+                        p5.innerHTML = '<strong>Data lançamento:</strong> ' + item.dataLancamento.data + ' (' + item.dataLancamento.pais + ')'
+
+                        let hr = document.createElement('hr')
+
+                        //organizando a ordem dos elementos de forma programatica
+                        divRow.appendChild(divCol)
+                        divCol.appendChild(p1)
+                        divCol.appendChild(p2)
+                        divCol.appendChild(p3)
+                        divCol.appendChild(p4)
+                        divCol.appendChild(p5)
+                        divCol.appendChild(hr)
+                        //inserindo o conteudo na div lista
+                        document.getElementById('conteudo').appendChild(divRow)
+
+                /*
+                    //elementos criados de forma estática 
+                    <div class="row">
+                        <div class="col ">
+                            <p><strong>Titulo:</strong> Título do filme</p>
+                            <p><strong>Resumo:</strong> Resumo do filme</p>
+                            <p><strong>Gênero:</strong> Gênero do filme</p>
+                            <p><strong>Elenco:</strong> Elenco do filme</p>
+                            <p><strong>Data lançamento:</strong> Data de lançamento do filme</p>
+                            <hr>
+                        </div>
+                    </div>
+                */
+                    }
+                        
+                    
+                }
+
+                if(xmlHttp.readyState == 4 && xmlHttp.status == 404){
+                    //..
+                }
+            }
+            //envio da requisição
+            xmlHttp.send()
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light mb-4">
+        <div class="container">
+            <div class="navbar-brand mb-0 h1">
+                <h3>Catalogo de Filmes</h3>
+            </div>
+        </div>
+    </nav>
+
+        <div class="container" id="conteudo">
+            <div class="row mb-5">
+                <div class="col">
+                    <button type="button " class="btn btn-success" onclick="getFilmes()">Listar filmes</button>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
